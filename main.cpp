@@ -53,7 +53,7 @@ uint64_t PerfT(int depth)
     return nodes;
 }
 
-void test()
+void debug()
 {
     std::string line, token;
     std::ifstream in("perft_suite.txt");
@@ -120,7 +120,7 @@ int main()
         }
         
         if (token == "position") position(is);
-        if (token == "debug")    test();
+        if (token == "debug")    debug();
         if (token == "d")        std::cout << Position::to_string() << std::endl;
         
     } while (cmd != "quit");
