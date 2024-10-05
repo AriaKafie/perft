@@ -110,3 +110,4 @@ std::string Position::fen() {
 
     return fen.str();
 }
+

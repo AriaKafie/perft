@@ -19,3 +19,4 @@ inline std::string move_to_uci(Move m) {
 }
 
 #endif
+

@@ -5,3 +5,4 @@ debug:
 clean:
 	rm -f *~ perft
 
+

@@ -262,3 +262,4 @@ inline Bitboard safe_step(Square s, int step) {
 }
 
 #endif
+

@@ -102,3 +102,4 @@ inline bool is_ok(Square s) {
 }
 
 #endif
+

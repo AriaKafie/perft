@@ -230,3 +230,4 @@ void undo_move(Move m)
 }
 
 #endif
+
