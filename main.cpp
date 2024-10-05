@@ -10,55 +10,6 @@
 #include "types.h"
 #include "uci.h"
 
-template<Color SideToMove>
-uint64_t PerfT(int depth)
-{
-    if (depth == 0)
-        return 1;
-
-    MoveList<SideToMove> moves;
-
-    if (depth == 1)
-        return moves.size();
-
-    uint64_t nodes = 0;
-    
-    for (Move m : moves)
-    {
-        do_move<SideToMove>(m);
-        nodes += PerfT<!SideToMove>(depth -1);
-        undo_move<SideToMove>(m);
-    }
-
-    return nodes;
-}
-
-template<Color SideToMove>
-void debug(std::istringstream& is)
-{
-    int   depth;
-    is >> depth;
-    
-    uint64_t elapsed = 0, total_nodes = 0;
-
-    MoveList<SideToMove> moves;
-
-    for (Move m : moves)
-    {
-        uint64_t nodes = 0;
-
-        do_move<SideToMove>(m);
-        nodes = PerfT<!SideToMove>(depth - 1);
-        undo_move<SideToMove>(m);
-
-        total_nodes += nodes;
-
-        std::cout << move_to_uci(m) << ": " << nodes << std::endl;
-    }
-
-    std::cout << "\nnodes searched: " << total_nodes << "\n" << std::endl;
-}
-
 void position(std::istringstream& is)
 {
     std::string token, fen = "";
@@ -74,11 +25,40 @@ void position(std::istringstream& is)
     Position::set(fen);
 }
 
+template<bool Root, Color SideToMove>
+uint64_t PerfT(int depth)
+{
+    if (depth == 0)
+        return 1;
+
+    MoveList<SideToMove> moves;
+
+    if (depth == 1 && !Root)
+        return moves.size();
+
+    uint64_t count, nodes = 0;
+    
+    for (Move m : moves)
+    {
+        do_move<SideToMove>(m);
+        count = PerfT<false, !SideToMove>(depth - 1);
+        undo_move<SideToMove>(m);
+
+        nodes += count;
+
+        if (Root)
+            std::cout << move_to_uci(m) << ": " << count << std::endl;
+    }
+
+    return nodes;
+}
+
 void test()
 {
     std::string line, token;
     std::ifstream in("perft_suite.txt");
     uint64_t expected;
+    bool failed = false;
 
     while (std::getline(in, line))
     {
@@ -94,19 +74,24 @@ void test()
         {
             int depth = std::stoi(token.substr(2));
 
-            std::cout << "PerfT " << depth << " " << fen << std::endl;
+            std::cout << "Perft " << depth << " " << fen << std::endl;
 
-            uint64_t nodes = Position::white_to_move() ? PerfT<WHITE>(depth)
-                                                       : PerfT<BLACK>(depth);
+            uint64_t nodes = Position::white_to_move() ? PerfT<false, WHITE>(depth)
+                                                       : PerfT<false, BLACK>(depth);
+            
             if (nodes != expected)
-                std::cout << "ERROR" << std::endl;
+            {
+                failed = true;
+                std::cout << "ERROR\n" << std::endl;
+                break;
+            }
 
             if (is.eof() && nodes == expected)
                 std::cout << "OK\n" << std::endl;
         }
     }
 
-    std::cout << "DONE\n" << std::endl;
+    std::cout << (failed ? "FAILED\n" : "ALL OK\n") << std::endl;
 }
 
 int main()
@@ -119,14 +104,19 @@ int main()
     do
     {
         std::getline(std::cin, cmd);
-
         std::istringstream is(cmd);
+        
         is >> token;
 
         if (token == "perft")
         {
-            if (Position::white_to_move()) debug<WHITE>(is);
-            else                           debug<BLACK>(is);
+            int   depth;
+            is >> depth;
+
+            uint64_t result = Position::white_to_move() ? PerfT<true, WHITE>(depth)
+                                                        : PerfT<true, BLACK>(depth);
+            
+            std::cout << "\nnodes searched: " << result << "\n" << std::endl;
         }
         
         if (token == "position") position(is);
