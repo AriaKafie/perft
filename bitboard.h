@@ -62,8 +62,23 @@ constexpr Bitboard RANK_7 = RANK_1 << 48;
 constexpr Bitboard RANK_8 = RANK_1 << 56;
 
 template<Direction D>
-constexpr Bitboard shift(Bitboard bb) {
+constexpr Bitboard shift_unsafe(Bitboard bb)
+{
+    if constexpr (D == NORTH)       return  bb << 8;
+    if constexpr (D == NORTH_EAST)  return  bb << 7;
+    if constexpr (D == EAST)        return  bb >> 1;
+    if constexpr (D == SOUTH_EAST)  return  bb >> 9;
+    if constexpr (D == SOUTH)       return  bb >> 8;
+    if constexpr (D == SOUTH_WEST)  return  bb >> 7;
+    if constexpr (D == WEST)        return  bb << 1;
+    if constexpr (D == NORTH_WEST)  return  bb << 9;
+    if constexpr (D == NORTH+NORTH) return  bb << 16;
+    if constexpr (D == SOUTH+SOUTH) return  bb >> 16;
+}
 
+template<Direction D>
+constexpr Bitboard shift(Bitboard bb)
+{
     if constexpr (D == NORTH)       return  bb << 8;
     if constexpr (D == NORTH_EAST)  return (bb & NOT_FILE_H) << 7;
     if constexpr (D == EAST)        return  bb >> 1;
