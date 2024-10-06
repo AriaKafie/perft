@@ -92,12 +92,6 @@ void debug()
 int main()
 {
     Bitboards::init();
-
-    // for (Square s1 = H1; s1 <= H1; s1++)
-    //     for (Square s2 = H1; s2 <= A8; s2++)
-    //         std::cout << int(s1) << " " << int(s2) << std::endl << to_string(AlignMask[s1][s2]) << std::endl;
-    
-    // return 0;
     Position::set("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
     std::string cmd, token;
