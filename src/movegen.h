@@ -10,8 +10,8 @@ template<Color Us>
 class MoveList {
  public:
     MoveList();
-    Move* begin() const { return moves; }
-    Move* end() const { return last; }
+    Move* begin() { return moves; }
+    Move* end() { return last; }
     size_t size() const { return last - moves; }    
  private:
     Move moves[128], *last = moves;

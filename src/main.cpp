@@ -108,10 +108,13 @@ int main()
             int   depth;
             is >> depth;
 
+            auto start = std::chrono::steady_clock::now();
             uint64_t result = Position::white_to_move() ? PerfT<true, WHITE>(depth)
                                                         : PerfT<true, BLACK>(depth);
+            auto end   = std::chrono::steady_clock::now();
             
-            std::cout << "\nnodes searched: " << result << "\n" << std::endl;
+            std::cout << "\nnodes searched: " << result << "\nin "
+                      << (std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000) << " ms\n" << std::endl;
         }
         
         if (token == "position") position(is);
@@ -120,4 +123,3 @@ int main()
         
     } while (cmd != "quit");
 }
-
