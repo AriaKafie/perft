@@ -55,38 +55,33 @@ uint64_t PerfT(int depth)
 
 void debug()
 {
-    std::string line, token;
     std::ifstream in("perft_suite.txt");
-    uint64_t expected;
-    bool failed = false;
-
-    while (std::getline(in, line))
+    bool          failed = false;
+    
+    for (std::string line; std::getline(in, line);)
     {
-        std::istringstream is(line);
-        std::string fen = "";
-
-        while (is >> token && token != "1")
-            fen += token + " ";
+        std::string        token;
+        std::string        fen = line.substr(0, line.find(';'));
+        std::istringstream is(line.substr(line.find(';')));
 
         Position::set(fen);
-        
-        while (is >> token >> expected)
+
+        for (uint64_t result, expected; is >> token >> expected;)
         {
             int depth = std::stoi(token.substr(2));
-
             std::cout << "Perft " << depth << " " << fen << std::endl;
-
-            uint64_t nodes = Position::white_to_move() ? PerfT<false, WHITE>(depth)
-                                                       : PerfT<false, BLACK>(depth);
             
-            if (nodes != expected)
+            result = Position::white_to_move() ? PerfT<false, WHITE>(depth)
+                                               : PerfT<false, BLACK>(depth);
+
+            if (result != expected)
             {
                 failed = true;
                 std::cout << "ERROR\n" << std::endl;
                 break;
             }
 
-            if (is.eof() && nodes == expected)
+            if (is.eof())
                 std::cout << "OK\n" << std::endl;
         }
     }
