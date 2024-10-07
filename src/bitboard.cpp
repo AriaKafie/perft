@@ -29,9 +29,9 @@ void Bitboards::init()
     }
 
     init_magics();
-    
-    Bitboard* table_ptr = xray_table;
 
+    Bitboard* table_ptr = xray_table;
+    
     for (PieceType pt : { BISHOP, ROOK })
     {
         Bitboard* masks = pt == BISHOP ? bishop_masks : rook_masks;
