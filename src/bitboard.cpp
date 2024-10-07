@@ -55,8 +55,8 @@ void Bitboards::init()
             for (PieceType pt : { BISHOP, ROOK })
                 if (attacks_bb(pt, s1, 0) & square_bb(s2))
                 {
-                    AlignMask[s1][s2] = attacks_bb(pt, s1, 0) & attacks_bb(pt, s2, 0) | square_bb(s1, s2);
                     CheckRay [s1][s2] = attacks_bb(pt, s1, square_bb(s2)) & attacks_bb(pt, s2, square_bb(s1)) | square_bb(s2);
+                    AlignMask[s1][s2] = attacks_bb(pt, s1, 0)             & attacks_bb(pt, s2, 0)             | square_bb(s1, s2);
                 }
 
         for (Direction d : { NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST })
