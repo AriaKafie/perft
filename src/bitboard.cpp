@@ -30,17 +30,6 @@ void Bitboards::init()
 
     init_magics();
 
-    Bitboard* table_ptr = xray_table;
-    
-    for (PieceType pt : { BISHOP, ROOK })
-    {
-        Bitboard* masks = pt == BISHOP ? bishop_masks : rook_masks;
-
-        for (Square s = H1; s <= A8; s++)
-            for (Bitboard occupied = 0, i = 0; i < 1 << popcount(masks[s]); occupied = generate_occupancy(masks[s], ++i))
-                *table_ptr++ = attacks_bb(pt, s, occupied ^ (attacks_bb(pt, s, occupied) & occupied));
-    }
-
     for (Square s1 = H1; s1 <= A8; s1++)
     {
         MainDiag[s1] = bishop_attacks(s1, 0) & (mask(s1, NORTH_WEST) | mask(s1, SOUTH_EAST)) | square_bb(s1);
@@ -52,12 +41,11 @@ void Bitboards::init()
                                         rank_distance(s1, D5) + file_distance(s1, D5) });
 
         for (Square s2 = H1; s2 <= A8; s2++)
-            for (PieceType pt : { BISHOP, ROOK })
-                if (attacks_bb(pt, s1, 0) & square_bb(s2))
-                {
-                    CheckRay [s1][s2] = attacks_bb(pt, s1, square_bb(s2)) & attacks_bb(pt, s2, square_bb(s1)) | square_bb(s2);
-                    AlignMask[s1][s2] = attacks_bb(pt, s1, 0)             & attacks_bb(pt, s2, 0)             | square_bb(s1, s2);
-                }
+            if (PieceType pt; attacks_bb(pt=BISHOP, s1, 0) & square_bb(s2) || attacks_bb(pt=ROOK, s1, 0) & square_bb(s2))
+            {
+                CheckRay [s1][s2] = attacks_bb(pt, s1, square_bb(s2)) & attacks_bb(pt, s2, square_bb(s1)) | square_bb(s2);
+                AlignMask[s1][s2] = attacks_bb(pt, s1, 0)             & attacks_bb(pt, s2, 0)             | square_bb(s1, s2);
+            }
 
         for (Direction d : { NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST })
             KingAttacks[s1] |= safe_step(s1, d);
@@ -104,7 +92,7 @@ void Bitboards::init()
 
 void init_magics() {
 
-    Bitboard* table_ptr = pext_table;
+    Bitboard *pext = pext_table, *xray = xray_table;
 
     for (PieceType pt : { BISHOP, ROOK })
     {
@@ -113,11 +101,14 @@ void init_magics() {
 
         for (Square s = H1; s <= A8; s++)
         {
-            base[s] = table_ptr - pext_table;
+            base[s] = pext - pext_table;
             mask[s] = attacks_bb(pt, s, 0) & ~((FILE_A | FILE_H) & ~file_bb(s) | (RANK_1 | RANK_8) & ~rank_bb(s));
 
-            for (int i = 0; i < 1 << popcount(mask[s]); i++)
-                *table_ptr++ = attacks_bb(pt, s, generate_occupancy(mask[s], i));
+            for (Bitboard occupied = 0, i = 0; i < 1 << popcount(mask[s]); occupied = generate_occupancy(mask[s], ++i))
+            {
+                *pext++ = attacks_bb(pt, s, generate_occupancy(mask[s], i));
+                *xray++ = attacks_bb(pt, s, occupied ^ (attacks_bb(pt, s, occupied) & occupied));
+            }
         }
     }
 }
