@@ -56,15 +56,14 @@ uint64_t PerfT(int depth)
 void debug()
 {
     std::ifstream in("perft_suite.txt");
-    bool          failed = false;
+    bool failed = false;
     
-    for (std::string line; std::getline(in, line);)
+    for (std::string token; std::getline(in, token);)
     {
-        std::string        token;
-        std::string        fen = line.substr(0, line.find(';'));
-        std::istringstream is(line.substr(line.find(';')));
-
+        std::string fen = token.substr(0, token.find(';'));
         Position::set(fen);
+        
+        std::istringstream is(token.substr(token.find(';')));
 
         for (uint64_t result, expected; is >> token >> expected;)
         {
@@ -93,17 +92,17 @@ int main()
 {
     Bitboards::init();
     Position::set("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-
-    std::string cmd, token;
+    
+    std::string cmd;
 
     do
     {
         std::getline(std::cin, cmd);
         std::istringstream is(cmd);
         
-        is >> token;
+        is >> cmd;
 
-        if (token == "perft")
+        if (cmd == "perft")
         {
             int   depth;
             is >> depth;
@@ -117,9 +116,9 @@ int main()
                       << (std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000) << " ms\n" << std::endl;
         }
         
-        if (token == "position") position(is);
-        if (token == "debug")    debug();
-        if (token == "d")        std::cout << Position::to_string() << std::endl;
+        if (cmd == "position") position(is);
+        if (cmd == "debug")    debug();
+        if (cmd == "d")        std::cout << Position::to_string() << std::endl;
         
     } while (cmd != "quit");
 }

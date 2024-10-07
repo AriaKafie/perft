@@ -54,20 +54,11 @@ void Bitboards::init()
         for (Square s2 = H1; s2 <= A8; s2++)
             if (PieceType pt; attacks_bb(pt=BISHOP, s1, 0) & square_bb(s2) || attacks_bb(pt=ROOK, s1, 0) & square_bb(s2))
                 AlignMask[s1][s2] = attacks_bb(pt, s1, 0) & attacks_bb(pt, s2, 0) | square_bb(s1, s2);
-                    
+
         for (Square ksq = s1, checker = H1; checker <= A8; checker++)
-        {
-            for (Direction d : { NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST })
-            {
-                Bitboard ray = 0;
-
-                for (Square s = ksq; safe_step(s, d) && !(square_bb(s) & square_bb(checker)); ray |= square_bb(s += d));
-
-                if (ray & square_bb(checker))
-                    CheckRay[ksq][checker] = ray;
-            }
-        }
-
+            if (PieceType pt; attacks_bb(pt=BISHOP, ksq, 0) & square_bb(checker) || attacks_bb(pt=ROOK, ksq, 0) & square_bb(checker))
+                CheckRay[ksq][checker] = attacks_bb(pt, ksq, square_bb(checker)) & attacks_bb(pt, checker, square_bb(ksq)) | square_bb(checker);
+        
         for (Direction d : { NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST })
             KingAttacks[s1] |= safe_step(s1, d);
 
