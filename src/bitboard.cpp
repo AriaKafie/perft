@@ -22,7 +22,7 @@ void Bitboards::init()
 {
     for (Square s1 = H1; s1 <= A8; s1++)
     {
-        FileBB[s1] = FILE_H << (s1 % 8);
+        FileBB[s1] = FILE_H << s1 % 8;
 
         for (Square s2 = H1; s2 <= A8; s2++)
             SquareDistance[s1][s2] = std::max(file_distance(s1, s2), rank_distance(s1, s2));
@@ -107,7 +107,7 @@ void init_magics() {
             for (Bitboard occupied = 0, i = 0; i < 1 << popcount(mask[s]); occupied = generate_occupancy(mask[s], ++i))
             {
                 *pext++ = attacks_bb(pt, s, occupied);
-                *xray++ = attacks_bb(pt, s, occupied ^ (attacks_bb(pt, s, occupied) & occupied));
+                *xray++ = attacks_bb(pt, s, occupied ^ attacks_bb(pt, s, occupied) & occupied);
             }
         }
     }

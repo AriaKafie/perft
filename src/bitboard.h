@@ -147,8 +147,8 @@ inline std::string to_string(Bitboard b) {
     return s + "\n";
 }
 
-inline Bitboard mask(Square s, Direction d) {
-
+inline Bitboard mask(Square s, Direction d)
+{
     switch (d) 
     {
         case NORTH_EAST: return mask(s, NORTH) & mask(s, EAST);
@@ -171,7 +171,7 @@ inline Bitboard mask(Square s, Direction d) {
         Bitboard r = rank_bb(s), m = 0;
 
         while (square_bb(s += d) & r)
-            m |= FILE_H << (s % 8);
+            m |= FILE_H << s % 8;
 
         return m;
     }
