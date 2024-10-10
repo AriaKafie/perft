@@ -121,34 +121,19 @@ MoveList<Us>::MoveList()
         last = make_pawn_moves<PROMOTION, UpLeft >(last, shift<UpLeft >(promotable & (~pinned | main_diag(ksq))) & bb(Them) & checkmask);
         last = make_pawn_moves<PROMOTION, Up     >(last, shift<Up     >(promotable &  ~pinned                  ) & empty    & checkmask);
     }
-
+ 
     if (shift<UpRight>(bb(FriendlyPawn)) & Position::ep_bb() & Rank6)
     {
-        Square to = state_ptr->ep_sq;
-        *last = make_move<ENPASSANT>(to - UpRight, to);
-        Bitboard after_ep = occupied ^ square_bb(to, to - UpRight, to - Up);
+        *last = make_move<ENPASSANT>(state_ptr->ep_sq - UpRight, state_ptr->ep_sq);
+        Bitboard after_ep = occupied ^ square_bb(state_ptr->ep_sq - UpRight, state_ptr->ep_sq - Up, state_ptr->ep_sq);
         last += !(bishop_attacks(ksq, after_ep) & enemy_bishop_queen | rook_attacks(ksq, after_ep) & enemy_rook_queen);
     }
-    if (shift<UpLeft >(bb(FriendlyPawn)) & Position::ep_bb() & Rank6)
+    if (shift<UpLeft>(bb(FriendlyPawn)) & Position::ep_bb() & Rank6)
     {
-        Square to = state_ptr->ep_sq;
-        *last = make_move<ENPASSANT>(to - UpLeft, to);
-        Bitboard after_ep = occupied ^ square_bb(to, to - UpLeft, to - Up);
+        *last = make_move<ENPASSANT>(state_ptr->ep_sq - UpLeft, state_ptr->ep_sq);
+        Bitboard after_ep = occupied ^ square_bb(state_ptr->ep_sq - UpLeft, state_ptr->ep_sq - Up, state_ptr->ep_sq);
         last += !(bishop_attacks(ksq, after_ep) & enemy_bishop_queen | rook_attacks(ksq, after_ep) & enemy_rook_queen);
     }
-    
-    // if (shift<UpRight>(bb(FriendlyPawn)) & Position::ep_bb() & Rank6)
-    // {
-    //     *last = make_move<ENPASSANT>(state_ptr->ep_sq - UpRight, state_ptr->ep_sq);
-    //     Bitboard after_ep = occupied ^ square_bb(state_ptr->ep_sq - UpRight, state_ptr->ep_sq - Up, state_ptr->ep_sq);
-    //     last += !(bishop_attacks(ksq, after_ep) & enemy_bishop_queen | rook_attacks(ksq, after_ep) & enemy_rook_queen);
-    // }
-    // if (shift<UpLeft>(bb(FriendlyPawn)) & Position::ep_bb() & Rank6)
-    // {
-    //     *last = make_move<ENPASSANT>(state_ptr->ep_sq - UpLeft, state_ptr->ep_sq);
-    //     Bitboard after_ep = occupied ^ square_bb(state_ptr->ep_sq - UpLeft, state_ptr->ep_sq - Up, state_ptr->ep_sq);
-    //     last += !(bishop_attacks(ksq, after_ep) & enemy_bishop_queen | rook_attacks(ksq, after_ep) & enemy_rook_queen);
-    // }
 
     for (Bitboard b = bb(FriendlyKnight) & ~pinned; b; clear_lsb(b))
     {
