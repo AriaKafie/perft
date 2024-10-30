@@ -9,8 +9,8 @@
 
 std::string piece_to_char = "  PNBRQK  pnbrqk";
 
-void Position::set(const std::string& fen) {
-
+void Position::set(const std::string& fen)
+{
 rft[G1] = make_move(H1, F1);
 rft[C1] = make_move(A1, D1);
 rft[G8] = make_move(H8, F8);
@@ -50,8 +50,8 @@ rft[C8] = make_move(A8, D8);
         state_ptr->ep_sq = uci_to_square(enpassant);
 }
 
-std::string Position::to_string() {
-
+std::string Position::to_string()
+{
     std::stringstream ss;
 
     ss << "\n+---+---+---+---+---+---+---+---+\n";
@@ -67,8 +67,8 @@ std::string Position::to_string() {
     return ss.str() + "  a   b   c   d   e   f   g   h\n\n" + fen() + "\n";
 }
 
-std::string Position::fen() {
-
+std::string Position::fen()
+{
     std::stringstream fen;
 
     for (int rank = 7; rank >= 0; rank--)
