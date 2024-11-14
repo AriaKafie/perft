@@ -18,9 +18,8 @@ void position(std::istringstream& is)
 
     if (token == "startpos")
         fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    else
-        while (is >> token)
-            fen += token + " ";
+    else while (is >> token)
+        fen += token + " ";
 
     Position::set(fen);
 }
@@ -60,18 +59,16 @@ void debug()
     
     for (std::string token; std::getline(in, token);)
     {
-        std::string fen = token.substr(0, token.find(';'));
-        Position::set(fen);
+        Position::set(token.substr(0, token.find(';')));
         
         std::istringstream is(token.substr(token.find(';')));
 
-        for (uint64_t result, expected; is >> token >> expected;)
+        for (uint64_t depth = token.substr(token.find(';'))[2] - '0', expected; is >> token >> expected; depth++)
         {
-            int depth = std::stoi(token.substr(2));
-            std::cout << "Perft " << depth << " " << fen << std::endl;
+            std::cout << "Perft " << depth << " " << Position::fen() << std::endl;
             
-            result = Position::white_to_move() ? PerfT<false, WHITE>(depth)
-                                               : PerfT<false, BLACK>(depth);
+            uint64_t result = Position::white_to_move() ? PerfT<false, WHITE>(depth)
+                                                        : PerfT<false, BLACK>(depth);
 
             if (result != expected)
             {
@@ -91,8 +88,8 @@ void debug()
 int main()
 {
     Bitboards::init();
-    Position::set("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     MoveGen::init();
+    Position::set("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     
     std::string cmd;
 
@@ -112,8 +109,6 @@ int main()
             uint64_t result = Position::white_to_move() ? PerfT<true, WHITE>(depth)
                                                         : PerfT<true, BLACK>(depth);
             auto end   = std::chrono::steady_clock::now();
-
-            //std::cout << "\nnodes searched: " << result << "\n" << std::endl;
 
             std::cout << "\nnodes searched: " << result << "\nin "
                       << (std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000) << " ms\n" << std::endl;
