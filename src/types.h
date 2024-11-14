@@ -13,13 +13,9 @@ typedef uint8_t  Color;
 typedef int8_t   Direction;
 typedef int8_t   Square;
 
-constexpr int MAX_PLY = 64;
+constexpr Move NULLMOVE = 0;
 
-struct StateInfo {
-    Piece captured;
-    Square ep_sq;
-    uint8_t castling_rights;
-};
+constexpr int MAX_PLY = 64;
 
 enum { WHITE, BLACK, COLOR_NB = 2 };
 

@@ -5,6 +5,16 @@
 
 void init_magics();
 
+static Bitboard generate_occupancy(Bitboard mask, int permutation)
+{
+    Bitboard occupied = 0;
+
+    for (int i = 0; mask; clear_lsb(mask), i++)
+        if (permutation & 1 << i) occupied |= mask & ((mask ^ 0xffffffffffffffff) + 1);
+
+    return occupied;
+}
+
 static Bitboard attacks_bb(PieceType pt, Square sq, Bitboard occupied)
 {
     Direction rook_directions[4] = { NORTH, EAST, SOUTH, WEST };

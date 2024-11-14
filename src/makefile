@@ -4,5 +4,3 @@ debug:
 	g++ -fpermissive -std=c++17 -march=native -w -g *.cpp -o debug
 clean:
 	rm -f *~ perft
-
-

@@ -229,10 +229,6 @@ inline void toggle_square(Bitboard& b, Square s) {
     b ^= 1ull << s;
 }
 
-inline Bitboard generate_occupancy(Bitboard mask, int permutation) {
-    return _pdep_u64(permutation, mask);
-}
-
 template<Color C>
 int king_safety(Square ksq, Bitboard occ) {
 

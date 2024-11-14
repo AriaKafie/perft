@@ -7,15 +7,15 @@
 #include "bitboard.h"
 #include "uci.h"
 
+Bitboard bitboards[16];
+Piece board[SQUARE_NB];
+
+StateInfo state_stack[MAX_PLY], *state_ptr = state_stack;
+
 std::string piece_to_char = "  PNBRQK  pnbrqk";
 
 void Position::set(const std::string& fen)
-{
-rft[G1] = make_move(H1, F1);
-rft[C1] = make_move(A1, D1);
-rft[G8] = make_move(H8, F8);
-rft[C8] = make_move(A8, D8);
-    
+{    
     memset(board, NO_PIECE, sizeof(board));
     memset(bitboards, 0ull, sizeof(bitboards));
 
@@ -38,7 +38,7 @@ rft[C8] = make_move(A8, D8);
         }
     }
 
-    side_to_move = color == "w" ? WHITE : BLACK;
+    state_ptr->side_to_move = color == "w" ? WHITE : BLACK;
 
     state_ptr->castling_rights = state_ptr->ep_sq = 0;
 
@@ -94,16 +94,16 @@ std::string Position::fen()
             fen << "/";
     }
 
-    fen << " " << "wb"[side_to_move] << " ";
+    fen << " " << "wb"[state_ptr->side_to_move] << " ";
 
     if (!state_ptr->castling_rights)
         fen << "-";
     else
     {
-        if (kingside_rights <WHITE>()) fen << "K";
-        if (queenside_rights<WHITE>()) fen << "Q";
-        if (kingside_rights <BLACK>()) fen << "k";
-        if (queenside_rights<BLACK>()) fen << "q";
+        if (state_ptr->castling_rights & 0b1000) fen << "K";
+        if (state_ptr->castling_rights & 0b0100) fen << "Q";
+        if (state_ptr->castling_rights & 0b0010) fen << "k";
+        if (state_ptr->castling_rights & 0b0001) fen << "q";
     }
   
     fen << " " << (state_ptr->ep_sq ? square_to_uci(state_ptr->ep_sq) : "-");

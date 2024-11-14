@@ -10,12 +10,18 @@
 
 #define bb(p) bitboard<p>()
 
-inline Move rft[SQUARE_NB];
+struct StateInfo
+{
+    Piece   captured;
+    Square  ep_sq;
+    uint8_t castling_rights;
+    Color   side_to_move;
+};
 
-inline Bitboard bitboards[16];
-inline Piece board[SQUARE_NB];
+extern Bitboard bitboards[16];
+extern Piece board[SQUARE_NB];
 
-inline StateInfo state_stack[MAX_PLY], *state_ptr = state_stack;
+extern StateInfo state_stack[MAX_PLY], *state_ptr;
 
 template<Piece P>
 inline Bitboard bitboard() { return bitboards[P]; }
@@ -25,29 +31,27 @@ inline Bitboard occupied_bb() { return bitboards[WHITE] | bitboards[BLACK]; }
 inline Piece piece_on(Square s) { return board[s]; }
 
 namespace Position {
-
-inline Color side_to_move;
     
 void set(const std::string& fen);
 std::string fen();
 std::string to_string();
 
-inline bool white_to_move() { return side_to_move == WHITE; }
+inline bool white_to_move() { return state_ptr->side_to_move == WHITE; }
     
 inline Bitboard ep_bb() { return square_bb(state_ptr->ep_sq); }
     
-template<Color Perspective>
-bool kingside_rights()
-{
-    constexpr Bitboard Mask = Perspective == WHITE ? 0b1000 : 0b0010;
-    return state_ptr->castling_rights & Mask;
-}
-template<Color Perspective>
-bool queenside_rights()
-{
-    constexpr Bitboard Mask = Perspective == WHITE ? 0b0100 : 0b0001;
-    return state_ptr->castling_rights & Mask;
-}
+// template<Color Perspective>
+// bool kingside_rights()
+// {
+//     constexpr Bitboard Mask = Perspective == WHITE ? 0b1000 : 0b0010;
+//     return state_ptr->castling_rights & Mask;
+// }
+// template<Color Perspective>
+// bool queenside_rights()
+// {
+//     constexpr Bitboard Mask = Perspective == WHITE ? 0b0100 : 0b0001;
+//     return state_ptr->castling_rights & Mask;
+// }
 
 } // namespace Position
 
@@ -115,7 +119,15 @@ void do_move(Move m)
     }
     case CASTLING:
     {
-        Move rook_move = rft[to];
+        Move rook_move = Us == WHITE ? to == G1 ? make_move(H1, F1)
+                                                : make_move(A1, D1)
+                                     : to == G8 ? make_move(H8, F8)
+                                                : make_move(A8, D8);
+        
+        /*        Move rook_move = to == G1 ? make_move(H1, F1)
+                       : to == C1 ? make_move(A1, D1)
+                       : to == G8 ? make_move(H8, F8) : make_move(A8, D8);*/
+        
         Square rook_from = from_sq(rook_move), rook_to = to_sq(rook_move);        
         Bitboard rook_from_to = square_bb(rook_from, rook_to);
 
@@ -196,7 +208,11 @@ void undo_move(Move m)
         return;
     case CASTLING:
     {
-        Move rook_move = rft[to];
+        Move rook_move = Us == WHITE ? to == G1 ? make_move(H1, F1)
+                                                : make_move(A1, D1)
+                                     : to == G8 ? make_move(H8, F8)
+                                                : make_move(A8, D8);
+        
         Square rook_from = from_sq(rook_move), rook_to = to_sq(rook_move);        
         Bitboard rook_from_to = square_bb(rook_from, rook_to);
 

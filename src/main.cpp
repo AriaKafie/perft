@@ -92,6 +92,7 @@ int main()
 {
     Bitboards::init();
     Position::set("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    MoveGen::init();
     
     std::string cmd;
 
@@ -111,7 +112,9 @@ int main()
             uint64_t result = Position::white_to_move() ? PerfT<true, WHITE>(depth)
                                                         : PerfT<true, BLACK>(depth);
             auto end   = std::chrono::steady_clock::now();
-            
+
+            //std::cout << "\nnodes searched: " << result << "\n" << std::endl;
+
             std::cout << "\nnodes searched: " << result << "\nin "
                       << (std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000) << " ms\n" << std::endl;
         }
