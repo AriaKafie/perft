@@ -45,11 +45,6 @@ void Bitboards::init()
         MainDiag[s1] = bishop_attacks(s1, 0) & (mask(s1, NORTH_WEST) | mask(s1, SOUTH_EAST)) | square_bb(s1);
         AntiDiag[s1] = bishop_attacks(s1, 0) & (mask(s1, NORTH_EAST) | mask(s1, SOUTH_WEST)) | square_bb(s1);
         
-        CenterDistance[s1] = std::min({ rank_distance(s1, E4) + file_distance(s1, E4),
-                                        rank_distance(s1, E5) + file_distance(s1, E5),
-                                        rank_distance(s1, D4) + file_distance(s1, D4),
-                                        rank_distance(s1, D5) + file_distance(s1, D5) });
-
         for (Square s2 = H1; s2 <= A8; s2++)
             if (PieceType pt; attacks_bb(pt=BISHOP, s1, 0) & square_bb(s2) || attacks_bb(pt=ROOK, s1, 0) & square_bb(s2))
             {
@@ -100,14 +95,14 @@ void Bitboards::init()
     }
 }
 
-void init_magics() {
-
+void init_magics()
+{
     Bitboard *pext = pext_table, *xray = xray_table;
 
     for (PieceType pt : { BISHOP, ROOK })
     {
-        int*      base = pt == BISHOP ? bishop_base  : rook_base;
-        Bitboard* mask = pt == BISHOP ? bishop_masks : rook_masks;
+        int      *base = pt == BISHOP ? bishop_base  : rook_base;
+        Bitboard *mask = pt == BISHOP ? bishop_masks : rook_masks;
 
         for (Square s = H1; s <= A8; s++)
         {

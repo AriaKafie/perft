@@ -94,12 +94,12 @@ Move *generate_moves(Move *list)
     constexpr Piece EnemyQueen     = make_piece(Them, QUEEN);
     constexpr Piece FriendlyKing   = make_piece(Us,   KING);
     constexpr Piece EnemyKing      = make_piece(Them, KING);
-
-    Bitboard seen_by_enemy      = pawn_attacks<Them>(bb(EnemyPawn)) | king_attacks(lsb(bb(EnemyKing)));
+    
     Bitboard enemy_rook_queen   = bb(EnemyQueen) | bb(EnemyRook);
     Bitboard enemy_bishop_queen = bb(EnemyQueen) | bb(EnemyBishop);
     Square   ksq                = lsb(bb(FriendlyKing));
-    Bitboard occupied           = occupied_bb() ^ square_bb(ksq);
+    Bitboard occupied           = occupied_bb() ^ bb(FriendlyKing);
+    Bitboard seen_by_enemy      = pawn_attacks<Them>(bb(EnemyPawn)) | king_attacks(lsb(bb(EnemyKing)));
 
     for (Bitboard b = bb(EnemyKnight);    b; clear_lsb(b)) seen_by_enemy |= knight_attacks(lsb(b));
     for (Bitboard b = enemy_bishop_queen; b; clear_lsb(b)) seen_by_enemy |= bishop_attacks(lsb(b), occupied);

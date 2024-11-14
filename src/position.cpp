@@ -111,3 +111,12 @@ std::string Position::fen()
     return fen.str();
 }
 
+void Position::commit_move(Move m)
+{
+    if (white_to_move()) do_move<WHITE>(m);
+    else                 do_move<BLACK>(m);
+
+    memcpy(state_stack, state_ptr, sizeof(StateInfo));
+    state_ptr = state_stack;
+    state_ptr->side_to_move = !state_ptr->side_to_move;
+}

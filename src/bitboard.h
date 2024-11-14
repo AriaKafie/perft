@@ -4,7 +4,6 @@
 
 #include <cmath>
 #include <immintrin.h>
-#include <string>
 
 #include "types.h"
 
@@ -33,12 +32,7 @@ inline Bitboard MainDiag[SQUARE_NB];
 inline Bitboard AntiDiag[SQUARE_NB];
 inline Bitboard FileBB[SQUARE_NB];
 inline uint8_t SquareDistance[SQUARE_NB][SQUARE_NB];
-inline uint8_t CenterDistance[SQUARE_NB];
-inline int white_kingshield_scores[SQUARE_NB][1 << 6];
-inline int black_kingshield_scores[SQUARE_NB][1 << 6];
 inline uint8_t castle_masks[COLOR_NB][1 << 5];
-inline Bitboard white_kingshield[SQUARE_NB];
-inline Bitboard black_kingshield[SQUARE_NB];
 
 constexpr Bitboard ALL_SQUARES = 0xffffffffffffffffull;
 constexpr Bitboard FILE_A = 0x8080808080808080ull;
@@ -91,10 +85,6 @@ constexpr Bitboard shift(Bitboard bb)
     if constexpr (D == SOUTH+SOUTH) return  bb >> 16;
 }
 
-inline Bitboard distance_from_center(Square s) {
-    return CenterDistance[s];
-}
-
 inline Bitboard align_mask(Square ksq, Square pinned) {
     return AlignMask[ksq][pinned];
 }
@@ -130,21 +120,6 @@ inline constexpr Bitboard square_bb(Square sq, squares... sqs) {
 
 inline Bitboard rank_bb(Square s) {
     return RANK_1 << 8 * (s / 8);
-}
-
-inline std::string to_string(Bitboard b) {
-
-    std::string l = "+---+---+---+---+---+---+---+---+\n", s = l;
-
-    for (Bitboard bit = square_bb(A8); bit; bit >>= 1)
-    {
-        s += (bit & b) ? "| @ " : "|   ";
-
-        if (bit & FILE_H)
-            s += "|\n" + l;
-    }
-
-    return s + "\n";
 }
 
 inline Bitboard mask(Square s, Direction d)
@@ -219,21 +194,14 @@ constexpr Bitboard pawn_attacks(Square sq) {
 }
 
 template<Color C>
-constexpr Bitboard pawn_attacks(Bitboard pawns) {
-
+constexpr Bitboard pawn_attacks(Bitboard pawns)
+{
     if constexpr (C == WHITE) return shift<NORTH_EAST>(pawns) | shift<NORTH_WEST>(pawns);
     else                      return shift<SOUTH_WEST>(pawns) | shift<SOUTH_EAST>(pawns);
 }
 
 inline void toggle_square(Bitboard& b, Square s) {
     b ^= 1ull << s;
-}
-
-template<Color C>
-int king_safety(Square ksq, Bitboard occ) {
-
-    if constexpr (C == WHITE) return white_kingshield_scores[ksq][pext(occ, white_kingshield[ksq])];
-    else                      return black_kingshield_scores[ksq][pext(occ, black_kingshield[ksq])];
 }
 
 inline int square_distance(Square a, Square b) {
@@ -248,10 +216,9 @@ inline int rank_distance(Square a, Square b) {
     return std::abs((a / 8) - (b / 8));
 }
 
-inline Bitboard safe_step(Square s, int step) {
-
+inline Bitboard safe_step(Square s, int step)
+{
     Square to = s + step;
-
     return (is_ok(to) && square_distance(s, to) <= 2) ? square_bb(to) : 0;
 }
 

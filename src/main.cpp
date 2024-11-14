@@ -91,16 +91,16 @@ int main()
     MoveGen::init();
     Position::set("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     
-    std::string cmd;
+    std::string cmd, token;
 
     do
     {
         std::getline(std::cin, cmd);
         std::istringstream is(cmd);
         
-        is >> cmd;
+        is >> token;
 
-        if (cmd == "perft")
+        if (token == "perft")
         {
             int   depth;
             is >> depth;
@@ -110,13 +110,14 @@ int main()
                                                         : PerfT<true, BLACK>(depth);
             auto end   = std::chrono::steady_clock::now();
 
-            std::cout << "\nnodes searched: " << result << "\nin "
+            std::cout << "\nNodes searched: " << result << "\nIn "
                       << (std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000) << " ms\n" << std::endl;
         }
         
-        if (cmd == "position") position(is);
-        if (cmd == "debug")    debug();
-        if (cmd == "d")        std::cout << Position::to_string() << std::endl;
+        else if (token == "position") position(is);
+        else if (token == "debug")    debug();
+        else if (token == "d")        std::cout << Position::to_string() << std::endl;
+        else if (token == "moves")    for (std::string uci; is >> uci && uci_to_move(uci); Position::commit_move(uci_to_move(uci)));
         
     } while (cmd != "quit");
 }
