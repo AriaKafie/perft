@@ -18,8 +18,8 @@ void position(std::istringstream& is)
 
     if (token == "startpos")
         fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    else while (is >> token)
-        fen += token + " ";
+    else
+        for (;is >> token; fen += token + " ");
 
     Position::set(fen);
 }
@@ -30,23 +30,23 @@ uint64_t PerfT(int depth)
     if (depth == 0)
         return 1;
 
-    MoveList<SideToMove> moves;
+    Move list[128], *end = generate_moves<SideToMove>(list);
 
     if (depth == 1 && !Root)
-        return moves.size();
+        return end - list;
 
     uint64_t count, nodes = 0;
     
-    for (Move m : moves)
+    for (Move *m = list; m != end; m++)
     {
-        do_move<SideToMove>(m);
+        do_move<SideToMove>(*m);
         count = PerfT<false, !SideToMove>(depth - 1);
-        undo_move<SideToMove>(m);
+        undo_move<SideToMove>(*m);
 
         nodes += count;
 
         if (Root)
-            std::cout << move_to_uci(m) << ": " << count << std::endl;
+            std::cout << move_to_uci(*m) << ": " << count << std::endl;
     }
 
     return nodes;
@@ -63,7 +63,7 @@ void debug()
         
         std::istringstream is(token.substr(token.find(';')));
 
-        for (uint64_t depth = token.substr(token.find(';'))[2] - '0', expected; is >> token >> expected; depth++)
+        for (uint64_t depth = is.str()[2] - '0', expected; is >> token >> expected; depth++)
         {
             std::cout << "Perft " << depth << " " << Position::fen() << std::endl;
             
