@@ -12,7 +12,7 @@
 
 void position(std::istringstream& is)
 {
-    std::string token, fen = "";
+    std::string token, fen;
 
     is >> token;
 
@@ -89,6 +89,7 @@ int main()
 {
     Bitboards::init();
     MoveGen::init();
+    
     Position::set("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     
     std::string cmd, token;

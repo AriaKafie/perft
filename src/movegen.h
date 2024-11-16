@@ -19,7 +19,7 @@ namespace MoveGen { void init(); };
 inline void MoveGen::init()
 {
     for (Color c : { WHITE, BLACK })
-        for (uint8_t castling = 0; castling <= 0b1111; castling++)
+        for (int rights = 0; rights <= 0xf; rights++)
             for (Bitboard hash = 0; hash <= 0b111111; hash++)
             {
                 Move *kcastle   = &data[c][3];
@@ -29,8 +29,8 @@ inline void MoveGen::init()
                 
                 Move *src = no_castle;
 
-                bool rights_k = castling & (c == WHITE ? 0b1000 : 0b0010);
-                bool rights_q = castling & (c == WHITE ? 0b0100 : 0b0001);
+                bool rights_k = rights & (c == WHITE ? 0b1000 : 0b0010);
+                bool rights_q = rights & (c == WHITE ? 0b0100 : 0b0001);
                 bool rights_kq = rights_k && rights_q;
 
                 if (rights_k || rights_q)
@@ -40,7 +40,7 @@ inline void MoveGen::init()
                     else if ((hash & 0b111100) == 0) src = rights_q ? qcastle : no_castle;
                 }
 
-                table[c][castling][hash] = src;
+                table[c][rights][hash] = src;
             }
 }
 
