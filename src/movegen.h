@@ -98,7 +98,7 @@ Move *generate_moves(Move *list)
     Bitboard enemy_rook_queen   = bb(EnemyQueen) | bb(EnemyRook);
     Bitboard enemy_bishop_queen = bb(EnemyQueen) | bb(EnemyBishop);
     Square   ksq                = lsb(bb(FriendlyKing));
-    Bitboard occupied           = occupied_bb() ^ bb(FriendlyKing);
+    Bitboard occupied           = Position::occupied() ^ bb(FriendlyKing);
     Bitboard seen_by_enemy      = pawn_attacks<Them>(bb(EnemyPawn)) | king_attacks(lsb(bb(EnemyKing)));
 
     for (Bitboard b = bb(EnemyKnight);    b; clear_lsb(b)) seen_by_enemy |= knight_attacks(lsb(b));

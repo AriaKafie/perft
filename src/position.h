@@ -26,22 +26,21 @@ extern StateInfo state_stack[MAX_PLY], *state_ptr;
 template<Piece P>
 inline Bitboard bitboard() { return bitboards[P]; }
 
-inline Bitboard occupied_bb() { return bitboards[WHITE] | bitboards[BLACK]; }
-
 inline Piece piece_on(Square s) { return board[s]; }
 
-namespace Position {
-    
-void set(const std::string& fen);
-void commit_move(Move m);
-std::string fen();
-std::string to_string();
+namespace Position
+{    
+    void set(const std::string& fen);
+    void commit_move(Move m);
+    std::string fen();
+    std::string to_string();
 
-inline bool white_to_move() { return state_ptr->side_to_move == WHITE; }
-    
-inline Bitboard ep_bb() { return square_bb(state_ptr->ep_sq); }
+    inline bool white_to_move() { return state_ptr->side_to_move == WHITE; }
 
-} // namespace Position
+    inline Bitboard occupied() { return bitboards[WHITE] | bitboards[BLACK]; }
+    
+    inline Bitboard ep_bb() { return square_bb(state_ptr->ep_sq); }
+}
 
 template<Color JustMoved>
 void update_castling_rights()
