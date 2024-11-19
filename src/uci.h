@@ -24,8 +24,8 @@ inline std::string move_to_uci(Move m)
 
 inline Move uci_to_move(const std::string& uci)
 {
-    for (Move list[128], *m = list, *end = (Position::white_to_move() ? generate_moves<WHITE>(list)
-                                                                      : generate_moves<BLACK>(list)); m != end; m++)
+    for (Move list[128], *m = list, *end = Position::white_to_move() ? generate_moves<WHITE>(list)
+                                                                     : generate_moves<BLACK>(list); m != end; m++)
         if (move_to_uci(*m) == uci) return *m;
 
     return NULLMOVE;
