@@ -62,13 +62,12 @@ void do_move(Move m)
     constexpr Direction Up  = Us == WHITE ? NORTH : SOUTH;
     constexpr Direction Up2 = Up * 2;
 
-    Square from = from_sq(m);
-    Square to   = to_sq(m);
+    Square from = from_sq(m), to = to_sq(m);
 
     memcpy(state_ptr + 1, state_ptr, sizeof(StateInfo));
     state_ptr++;
     state_ptr->captured = piece_on(to);
-    state_ptr->ep_sq = (from + Up) * !(to - from ^ Up2 | piece_on(from) ^ Pawn);
+    state_ptr->ep_sq = (from + Up) * !(from ^ to ^ 16 | piece_on(from) ^ Pawn);
 
     Bitboard zero_to = ~square_bb(to);
     Bitboard from_to =  square_bb(from, to);

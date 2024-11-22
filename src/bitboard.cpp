@@ -17,15 +17,20 @@ static Bitboard generate_occupancy(Bitboard mask, int permutation)
 
 static Bitboard attacks_bb(PieceType pt, Square sq, Bitboard occupied)
 {
-    Direction rook_directions[4] = { NORTH, EAST, SOUTH, WEST };
+    Bitboard  attacks              = 0;
+    Direction rook_directions[4]   = { NORTH, EAST, SOUTH, WEST };
     Direction bishop_directions[4] = { NORTH_EAST, SOUTH_EAST, SOUTH_WEST, NORTH_WEST };
 
-    Bitboard atk = 0;
-
     for (Direction d : pt == ROOK ? rook_directions : bishop_directions)
-        for (Square s = sq; safe_step(s, d) && !(square_bb(s) & occupied); atk |= square_bb(s += d));
+    {
+        Square s = sq;
+        
+        do
+            attacks |= safe_step(s, d);
+        while (safe_step(s, d) && !(square_bb(s += d) & occupied));
+    }
     
-    return atk;
+    return attacks;
 }
 
 void Bitboards::init()
